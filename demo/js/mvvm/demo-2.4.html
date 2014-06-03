@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>联动教学 - 级联select</title>
+  </head>
+  <body>
+    <div ms-controller="page">
+      <select ms-repeat-el="aListId" ms-duplex="aListId[$index]">
+        <option value="">请选择</option>
+        <option ms-repeat-el="arr" ms-value="el.id" ms-if-loop="checkShow(el.id, $outer.$index)">{{el.name}}</option>
+      </select>
+    </div>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.js"></script>
+    <script src="../lib/avalon.mobile.js"></script>
+    <script>
+      var data = [
+        {id:'1', name:'地区1'}
+      , {id:'2', name:'地区2'}
+      , {id:'3', name:'地区3'}
+      , {id:'4', name:'地区4'}
+      ];
+      var vm = avalon.define('page', function(vm) {
+        vm.arr = data
+        vm.aListId = ['', '', '']
+        vm.nCount = 0
+        // 多个下拉框选中项不能重复
+        vm.checkShow = function(id, index) {
+          vm.nCount
+          var i = vm.aListId.indexOf(id)
+          if (i == -1 || i == index) {
+            return true
+          }
+          return false
+        }
+      });
+      $('body').on('change', 'select', function() {
+        vm.nCount++
+      });
+    </script>
+  </body>
+</html>

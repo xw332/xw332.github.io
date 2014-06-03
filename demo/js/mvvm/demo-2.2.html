@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>联动教学 - 级联select</title>
+  </head>
+  <body>
+    <div ms-controller="page">
+      <select ms-duplex="val1">
+        <option value="">请选择</option>
+        <option ms-repeat-el="arr" ms-value="el.id" ms-if-loop="!el.pid">{{el.name}}</option>
+      </select>
+      <select ms-duplex="val2" ms-visible="val1">
+        <option value="">请选择</option>
+        <option ms-repeat-el="arr" ms-value="el.id" ms-if-loop="el.pid == val1">{{el.name}}</option>
+      </select>
+      <select ms-duplex="val3" ms-visible="val2">
+        <option value="">请选择</option>
+        <option ms-repeat-el="arr" ms-value="el.id" ms-if-loop="el.pid == val2">{{el.name}}</option>
+      </select>
+      <hr>
+      <select ms-duplex="val1">
+        <option value="">请选择</option>
+        <option ms-repeat-el="arr" ms-value="el.id" ms-if-loop="!el.pid">{{el.name}}</option>
+      </select>
+      <select ms-duplex="val2">
+        <option value="">请选择</option>
+        <option ms-repeat-el="arr" ms-value="el.id" ms-if-loop="el.pid == val1">{{el.name}}</option>
+      </select>
+      <select ms-duplex="val3">
+        <option value="">请选择</option>
+        <option ms-repeat-el="arr" ms-value="el.id" ms-if-loop="el.pid == val2">{{el.name}}</option>
+      </select>
+    </div>
+
+    <script src="../lib/avalon.mobile.js"></script>
+    <script>
+      var data = [
+        {id:'0', name:'浙江'}
+      , {id:'2', pid:'0', name:'杭州'}
+      , {id:'3', pid:'0', name:'温州'}
+      , {id:'4', pid:'2', name:'西湖区'}
+      , {id:'5', pid:'2', name:'上城区'}
+      , {id:'6', pid:'3', name:'鹿城区'}
+      , {id:'7', pid:'3', name:'瓯海区'}
+      ];
+      var vm = avalon.define('page', function(vm) {
+        vm.arr = data;
+        vm.val1 = '';
+        vm.val2 = '';
+        vm.val3 = '';
+      });
+      vm.$watch('val1', function() {
+        vm.val2 = '';
+      });
+      vm.$watch('val2', function() {
+        vm.val3 = '';
+      });
+    </script>
+  </body>
+</html>

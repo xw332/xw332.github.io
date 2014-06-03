@@ -1,0 +1,749 @@
+<html>
+<head>
+    <title>添笔画演示1.32</title>
+    <link rel="stylesheet" type="text/css" href="corescreen.css" />
+    <!--<link rel="stylesheet" type="text/css" href="http://ppmm365.com/res/css/corescreen.css" />-->
+    <!--<link rel="stylesheet" type="text/css" href="http://127.0.0.1:81/res/css/corescreen.css" />-->
+    <style type="text/css">
+		#board, #control { float:left; }
+		#board { margin-left:250px; }
+            #board td { width:100px; height:100px; padding-top:30px; text-align:center; border:2px solid #444; font-size:18px; font-weight:bold; color:#111; }
+            #board .b_t { border-top-color:orange; }
+            #board .b_r { border-right-color:orange; }
+            #board .b_b { border-bottom-color:orange; }
+            #board .b_l { border-left-color:orange; }
+            #board .b_t_last { border-top-width:3px; }
+            #board .b_r_last { border-right-width:3px; }
+            #board .b_b_last { border-bottom-width:3px; }
+            #board .b_l_last { border-left-width:3px; }
+            #board .red { background:red; }
+            #board .blue { background:blue; }
+        #control { width:110px; margin-left:20px; }
+            #control li { margin-top:5px; text-align:left; }
+                #player li { margin-top:0; }
+    </style>
+    <!--<script type="text/javascript" src="jquery.min.js"></script>-->
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+    <script type="text/javascript">
+        var i = 0;
+        $(function () {
+            var Game = {
+                config: {
+					numCheck: {
+						max: 0.7,
+						min: 0.3
+                    },
+                    classList: [
+                        'b_t',
+                        'b_r',
+                        'b_b',
+                        'b_l'
+                    ],
+                    cid: null,
+                    objStepNum: 0
+                },
+                option: {//默认设置
+                    board: {
+						numWidth: 3,
+						numHeight: 3
+                    },
+                    line: {///css
+                        widthMax: 100,
+                        heightMax: 100
+                    },
+                    lineRank: 0,
+                    isRandom: false,
+                    mode: 0,
+                    indexPlayer: 0,///也可以作为房主权限
+                    box: [],
+                    host: ''///
+                },
+                players: {
+                    list: [],
+                    index: 0,
+                    isPlaying: 0
+                },
+                msg: {
+                    create: '创建成功！',
+                    noRoom: '当前没有空闲的房间，您可以选择自己创建房间或者稍后重试！',
+                    join: '加入成功！',
+                    get: '开始接收消息！',
+                    notEnough: '房间里还没有其他人！',
+                    start: '游戏开始！',
+                    out: '退出成功',
+                    timeout: '网络延时，请稍后重试！'
+                },
+                div: {
+                    $board: false,
+                    $box: false,
+                    players: {
+                        $player: false,
+                        $index: false,
+                        $score: false
+                    },
+                    btn: {
+                        $reset: false,
+                        $create: false,
+                        $join: false,
+                        $out: false
+                    },
+                    $mode: false
+                },
+                init: function () {//初始化
+                    var obj = Game;
+                    var $board = obj.div.$board = $('#board'),
+                        $player = obj.div.players.$player = $('#control .player'),
+                        $index = obj.div.players.$index = $('#control .index'),
+                        $score = obj.div.players.$score = $('#control .score'),
+                        $reset = obj.div.btn.$reset = $('#btnReset'),
+                        $create = obj.div.btn.$create = $('#btnCreate'),
+                        $join = obj.div.btn.$join = $('#btnJoin'),
+                        $out = obj.div.btn.$out = $('#btnOut'),
+                        $mode = obj.div.$mode = $('#listMode');
+                    //重新开始
+                    $reset.click(function(){
+                        if (confirm('您确定要重新开始吗？')) {
+                            obj.reset();
+                        }
+                    });
+                    //创建房间
+                    $create.click(function(){
+                        obj.create();
+                    });
+                    //加入房间
+                    $join.click(function(){
+                        obj.join();
+                    });
+                    //退出房间
+                    $out.click(function(){
+                        obj.out();
+                    });
+                    //模式切换
+                    $mode.change(function(){
+                        var flag = this.value == 2;
+                        $reset.attr('disabled', flag);
+                        $create.attr('disabled', !flag);
+                        $join.attr('disabled', !flag);
+                    });
+                    ///网络功能默认不可用，也可设为隐藏
+                    if ($mode.val() != 2) {
+                        $reset.attr('disabled', false);
+                        $create.attr('disabled', true);
+                        $join.attr('disabled', true);
+                    } else {
+                        $reset.attr('disabled', true);
+                        $create.attr('disabled', false);
+                        $join.attr('disabled', false);
+                    }
+                    $out.attr('disabled', true);
+                    //初始化棋盘
+                    obj.reset(1);
+                    //绑定点击事件
+                    $board.click(function(e){///先计算出index可能更精确
+                        if (!obj.players.isPlaying || (obj.config.mode == 2 && obj.players.index != obj.config.indexPlayer)) {
+                            return false;//判断是不是游戏中、是不是我的回合
+                        }
+                        var config = obj.config,
+                            widthMax = config.line.widthMax,
+                            heightMax = config.line.heightMax,
+                            numWidth = config.board.numWidth,
+                            numHeight = config.board.numHeight;
+                        var indexWidth = (e.pageX - $board.offset().left) / widthMax,///减边框偏移量与棋盘偏移量
+                            indexWidth_float = indexWidth % 1,///取小数
+                            indexWidth = parseInt(indexWidth),//取整数
+                            indexHeight = (e.pageY - $board.offset().top) / heightMax,
+                            indexHeight_float = indexHeight % 1,///取小数
+                            indexHeight = parseInt(indexHeight),//取整数
+                            numCheckMax = config.numCheck.max,
+                            numCheckMin = config.numCheck.min,
+                            side = -1;
+                        indexWidth = Math.min(indexWidth, numWidth - 1);///
+                        indexHeight = Math.min(indexHeight, numHeight - 1);///
+                        if (indexHeight_float > numCheckMin && indexHeight_float < numCheckMax) {
+                            if (indexWidth_float < numCheckMin) {
+                                side = 3;
+                            } else if (indexWidth_float > numCheckMax) {
+                                side = 1;
+                            }
+                        } else if (indexWidth_float > numCheckMin && indexWidth_float < numCheckMax) {
+                            if (indexHeight_float < numCheckMin) {
+                                side = 0;
+                            } else if (indexHeight_float > numCheckMax) {
+                                side = 2;
+                            }
+                        }
+                        if (side !== -1) {
+                            obj.reset.selLine(side, indexWidth, indexHeight);
+                        }
+                    });
+                    //规则显示
+                    $('#rule').click(function(){
+                        $('#rule-detail').slideToggle(300);
+                    });
+                },
+                reset: function(state){//重置
+                    var obj = Game;
+                    ///配置初始化
+                    var mode = $('#listMode').val(),
+                        indexPlayer = obj.option.indexPlayer;///
+                    var lineRank = 1,
+                        isRandom = true;
+                    if (mode == 2 && !state) {
+                        obj.div.btn.$reset.attr('disabled', true);
+                    }
+                    if (mode == 2 || state) {///
+                        lineRank = 0,
+                        isRandom = false;
+                    }
+                    ///if ( indexPlayer !== 0 ) {
+                        ///下载配置
+                    ///} else {
+                        $.extend(obj.option, {///需要提供设置接口
+                            board: {
+                                numWidth: 3,///
+                                numHeight: 3///
+                            },
+                            line: {
+                                widthMax: 100,///
+                                heightMax: 100///
+                            },
+                            lineRank: lineRank,
+                            isRandom: isRandom,
+                            mode: mode,
+                            ///indexPlayer: indexPlayer,
+                            box: [],
+                            host: ''
+                        });
+                        $.extend(obj.config, obj.option);
+                    ///}
+                    //玩家初始化
+                    var list = [],
+                        index = 0;///
+                    list.push({
+                        index: 0,
+                        Score: 0,
+                        color: 'red'
+                    });
+                    list.push({
+                        index: 1,
+                        Score: 0,
+                        color: 'blue'
+                    });
+                    obj.players = {///
+                        list: list,
+                        index: index,
+                        isPlaying: 0
+                    };
+                    obj.div.players.$index.attr('checked', false).eq(index).attr('checked', true);
+                    obj.div.players.$score.text(0);
+                    //棋盘初始化
+                    var config = obj.config,
+                        widthMax = config.line.widthMax,
+                        heightMax = config.line.heightMax,
+                        numWidth = config.board.numWidth,
+                        numHeight = config.board.numHeight,
+                        strTmp = "";
+                    for (var i = 0; i < numHeight; i++) {
+                        strTmp += "<tr>";
+                        for (var j = 0; j < numWidth; j++) {
+                            var numRandom = 1;
+                            if (config.isRandom) {
+                                numRandom = obj.getRandom(1, 9);///2
+                            }
+                            strTmp += "<td>" + numRandom + "</td>";
+                            config.box.push([0, 0, 0, 0]);//二维数组
+                        }
+                        strTmp += "</tr>";
+                    }
+                    var $board = obj.div.$board
+                        ///.width(widthMax * numWidth)
+                        .html(strTmp);
+                    var $box = obj.div.$box = $board.find('td');
+                    var setSide = function(side, index, $select){//选中指定边
+                            var obj = Game;
+                            if (!$select) {
+                                return !obj.config.box[index][side];
+                            } else {
+                                $board.find('.last').removeClass('last b_t_last b_r_last b_b_last b_l_last');///
+                                $select.addClass(config.classList[side] + ' ' + config.classList[side] + '_last' + ' last');///
+                                return obj.config.box[index][side] = 1;
+                            }
+                        },
+                        checkSide = function(side, index){//检查指定边是否已选中
+                            return setSide(side, index);
+                        },
+                        getSideClosest = function(side){//返回相对的边
+                            return (side + 2) % 4;
+                        },
+                        getIndexClosest = function(side, index){//返回相对的方块索引
+                            var indexClosest = index;
+                            switch (side) {
+                                case 0:
+                                    indexClosest = index - numWidth;
+                                    break;
+                                case 1:
+                                    indexClosest = index + 1;
+                                    break;
+                                case 2:
+                                    indexClosest = index + numWidth;
+                                    break;
+                                case 3:
+                                    indexClosest = index - 1;
+                                    break;
+                            }
+                            return indexClosest;
+                        },
+                        isEdge = function(side, indexWidth, indexHeight){//判断是否边缘方块
+                            var Result = false;
+                            switch (side) {
+                                case 0:
+                                    Result = indexHeight == 0;
+                                    break;
+                                case 1:
+                                    Result = indexWidth == numWidth - 1;
+                                    break;
+                                case 2:
+                                    Result = indexHeight == numHeight - 1;
+                                    break;
+                                case 3:
+                                    Result = indexWidth == 0;
+                                    break;
+                            }
+                            return Result;
+                        },
+                        getSideUsedList = function($select){//返回已选边数组
+                            var arrSide = [];
+                            $.each(config.classList, function(i, className){
+                                if ($select.hasClass(className)) arrSide.push(i);
+                            });
+                            return arrSide;
+                        },
+                        getSideUsedNum = function($select){//返回已选边数
+                            return getSideUsedList($select).length;
+                        },
+                        checkRound = function(){//判断成环
+                            var obj = Game;
+                            var $unSelect = $box.not('.select');
+                            var score = 0;
+                            $unSelect.text(function(i, text){
+                                var $this = $(this);
+                                if (getSideUsedNum($this) == 4) {
+                                    $this.addClass('select').addClass(obj.players.list[obj.players.index].color);
+                                    score += Number(text);
+                                }
+                            });
+                            if (score) {
+                                obj.addScore(score);
+                                obj.checkDone();///
+                            } else {
+                                obj.changePlayer();
+                            }
+                        }
+                    obj.reset.selLine = function(side, indexWidth, indexHeight, numLineMax){//选中指定方块指定边
+                        var obj = Game;
+                        side = Number(side);
+                        indexHeight = Number(indexHeight);
+                        indexWidth = Number(indexWidth);
+                        var index = indexHeight * numWidth + indexWidth,///
+                            $select = $box.eq(index),
+                            $unSelect = $box.not('.select');
+                        if ($select.hasClass('select')) {
+                            return false;
+                        }
+                        var hasChecked = false;
+                        if (checkSide(side, index)) {
+                            if (numLineMax) {///
+                                var index_c = getIndexClosest(side, index),
+                                    $select_c = $box.eq(index_c);
+                                if (getSideUsedNum($select) >= numLineMax || getSideUsedNum($select_c) >= numLineMax) {
+                                    return false;
+                                }
+                            }
+                            setSide(side, index, $select);
+                            if (!isEdge(side, indexWidth, indexHeight)) {
+                                var side_c = getSideClosest(side),
+                                    index_c = getIndexClosest(side, index),
+                                    $select_c = $box.eq(index_c);
+                                setSide(side_c, index_c, $select_c);
+                            }
+                            hasChecked = true;
+                        }
+                        ///检查状态
+                        if (hasChecked && obj.players.isPlaying) {
+                            if (obj.config.mode == 2 && obj.players.index == obj.config.indexPlayer) {///
+                                var objStep = {
+                                    side: side,
+                                    indexWidth: indexWidth,
+                                    indexHeight: indexHeight
+                                }
+                                //发送消息
+                                obj.set(objStep);
+                            }
+                            checkRound();///可能被循环调用阻塞
+                            (function(){///其他模式AI
+                                if (obj.config.mode == 1) {//人机模式
+                                    if (obj.players.isPlaying === 1 && obj.players.index != obj.config.indexPlayer) {///同步
+                                        var objMax = {
+                                            index: -1,
+                                            side: -1,
+                                            weight: 0,///计算分数与策略权重
+                                            div: null
+                                        }
+                                        $unSelect.each(function(){
+                                            var $this = $(this),
+                                                len = getSideUsedNum($this),
+                                                index = $box.index($this),
+                                                side = -1,
+                                                score = 0,
+                                                weight = 0,///
+                                                flag = false;
+                                            if (len === 3) {
+                                                ///计算分数
+                                                score = 10000;
+                                                if (score > objMax.weight) {
+                                                    flag = true;
+                                                }
+                                            } else if ((len === 1 || len === 0) && objMax.weight < 10000) {
+                                                ///邻接判断、计算分数
+                                                ///有效邻接方块权值评分
+                                                score = 100; 
+                                                if (score > objMax.weight) {
+                                                    flag = true;
+                                                }
+                                            } else if (len === 2 && objMax.weight < 100) {
+                                                ///计算分数
+                                                score = 1;
+                                                if (score > objMax.weight) {
+                                                    flag = true;
+                                                }
+                                            }
+                                            if (flag) {
+                                                objMax = {
+                                                    index: index,
+                                                    side: side,
+                                                    weight: score,
+                                                    div: $this
+                                                }
+                                            }
+                                        });
+                                        if (objMax.div) {
+                                            var arrSideUsed = getSideUsedList(objMax.div);///
+                                            for (var i = 0; i < 4; i++) {
+                                                if ($.inArray(i, arrSideUsed) === -1) {
+                                                    objMax.side = i;
+                                                    break;
+                                                }
+                                            }
+                                        }
+                                        var indexWidth = objMax.index % numWidth,
+                                            indexHeight = parseInt(objMax.index / numWidth);
+                                        obj.reset.selLine(objMax.side, indexWidth, indexHeight);
+                                    }
+                                }
+                                if (obj.config.mode == 2) {///网络对战
+                                    if (obj.players.isPlaying === 1 && obj.players.index != obj.config.indexPlayer) {
+                                        if (obj.config.objStepNum === 0) {///
+                                            obj.get();
+                                        }
+                                    }
+                                }
+                            })();
+                        }
+                        return hasChecked;
+                    }
+                    //棋盘随机状态
+                    if (config.lineRank) {///
+                        if (config.lineRank == 1) {
+							for (var i = 0, len = numWidth * numHeight * 2; i < len; i++) {
+								var side = obj.getRandom(0, 4),
+									indexWidth = obj.getRandom(0, numWidth),
+									indexHeight = obj.getRandom(0, numHeight);
+								obj.reset.selLine(side, indexWidth, indexHeight, 2);
+							}
+                        } else {
+							var len = 0;
+							obj.div.$box.each(function(index){
+								var indexWidth = index % numWidth,
+									indexHeight = parseInt(index / numWidth),
+									numLineLimit = 0.8,///
+									lenMax = numWidth * numHeight * 2 * numLineLimit;
+								for (var i = 0; i < 2; i++) {
+									if (len > lenMax) {
+										return false;
+									}
+									var side = obj.getRandom(0, 3);
+									if (obj.reset.selLine(side, indexWidth, indexHeight, 2)) {
+										len++;
+									}
+								}
+							});
+                        }
+                        $board.find('.last').removeClass('last b_t_last b_r_last b_b_last b_l_last');///
+                    }
+                    ///如果已经进入房间，先退出房间
+                    if (!state) {
+                        if ( mode == 2 ) {
+                            if (obj.config.indexPlayer == 0) {
+                                obj.start();
+                            } else {
+                                obj.get();///进入准备状态
+                                alert(obj.msg.get);
+                            }
+                        }
+                        var indexPlayer = obj.config.indexPlayer;
+                        obj.div.players.$player.removeClass(obj.players.list[0].color + ' ' + obj.players.list[1].color);
+                        obj.div.players.$player.eq(indexPlayer).addClass(obj.players.list[indexPlayer].color);///
+                        if ( mode == 0 ) {
+                            indexPlayer = indexPlayer == 1 ? 0 : 1;
+                            obj.div.players.$player.eq(indexPlayer).addClass(obj.players.list[indexPlayer].color);///
+                        }
+                        obj.players.isPlaying = 1;
+                    }
+                },
+                getRandom: function (min, max) {///获取随机数
+                    if (!arguments.length) {
+                        return +new Date();
+                    }
+                    return parseInt(Math.random() * (min - max) + max);
+                },
+                net: {
+                    
+                },
+                match: {
+                    
+                },
+                getCid: function(callback){//获取唯一客户端标识
+                    var obj = Game;
+                    if (obj.config.cid == null) {
+                        $.getJSON('games/gridcolor/getCid?id=' + obj.getRandom(), function(data){
+                            obj.config.cid = data;///
+                            callback(data);
+                            ///alert('您的id号是' + data + '号');
+                        });
+                    } else {
+                        callback(obj.config.cid);
+                    }
+                },
+                create: function(){//创建房间
+                    var obj = Game;
+                    obj.getCid(function(cid){
+                        var params = {
+                            cid: cid,
+                            id: obj.getRandom()
+                        }
+                        $.getJSON('games/gridcolor/create', params, function(data){
+                            if (data == 1) {
+                                obj.div.btn.$reset.attr('disabled', false);
+                                obj.div.btn.$create.attr('disabled', true);
+                                obj.div.btn.$join.attr('disabled', true);
+                                obj.div.btn.$out.attr('disabled', false);
+                                obj.reset(1);///
+                                ///轮询房间状态
+                                alert(obj.msg.create);
+                            } else {
+                                alert(obj.msg.timeout);
+                            }
+                        });
+                    });
+                },
+                join: function(){//加入房间
+                    var obj = Game;
+                    obj.getCid(function(cid){
+                        var params = {
+                            mode: 1,
+                            id: obj.getRandom()
+                        }
+                        $.getJSON('games/gridcolor/getRoomList', params, function(arrRoomList){
+                            if (arrRoomList.length) {///可以生成列表
+                                var room = arrRoomList[0];///可以保存到本地
+                                params = {
+                                    cid: room,
+                                    cid_r: cid,
+                                    id: obj.getRandom()
+                                }
+                                $.getJSON('games/gridcolor/join', params, function(data){
+                                    if (data == 1) {
+                                        obj.option.indexPlayer = 1;
+                                        obj.div.btn.$reset.attr('disabled', false);
+                                        obj.div.btn.$create.attr('disabled', true);
+                                        obj.div.btn.$join.attr('disabled', true);
+                                        obj.div.btn.$out.attr('disabled', false);
+                                        obj.reset(1);///
+                                        ///轮询房间状态
+                                        alert(obj.msg.join);
+                                    } else {
+                                        alert(obj.msg.timeout);
+                                    }
+                                });
+                            } else {
+                                alert(obj.msg.noRoom);
+                            }
+                        });
+                    });
+                },
+                start: function(){//开始游戏
+                    var obj = Game;
+                    var params = {
+                        cid: obj.config.cid,
+                        id: obj.getRandom()
+                    }
+                    $.getJSON('games/gridcolor/start', params, function(data){
+                        var fail = function(){
+                            obj.div.btn.$reset.attr('disabled', false);
+                        }
+                        if (data == 1) {
+                            alert(obj.msg.start);
+                        } else if (data == 0) {
+                            fail();
+                            alert(obj.msg.notEnough);
+                        } else {
+                            fail();
+                            alert(obj.msg.timeout);
+                        }
+                    });
+                },
+                out: function(){//退出房间
+                    var obj = Game;
+                    var params = {
+                        cid: obj.config.cid,
+                        id: obj.getRandom()
+                    }
+                    $.getJSON('games/gridcolor/out', params, function(data){
+                        if (data == 1) {
+                            obj.div.btn.$reset.attr('disabled', true);
+                            obj.div.btn.$create.attr('disabled', false);
+                            obj.div.btn.$join.attr('disabled', false);
+                            obj.div.btn.$out.attr('disabled', true);
+                            alert(obj.msg.out);
+                        } else {
+                            alert(obj.msg.timeout);
+                        }
+                    });
+                },
+                set: function(params){//发送消息（上传操作）
+                    var obj = Game;
+                    params.cid = obj.config.cid;
+                    params.id = obj.getRandom();
+                    $.getJSON('games/gridcolor/set', params, function(){
+                        ///确认收到，异常重试
+                    });
+                },
+                get: function(flag){//接收消息（下载操作）
+                    var obj = Game;
+                    if (!flag) {
+                        obj.loadToggle(true);
+                    }
+                    var params = {
+                        cid: obj.config.cid,
+                        id: obj.getRandom()
+                    }
+                    setTimeout(function(){///考虑对方延迟
+                        $.getJSON('games/gridcolor/get', params, function(arrStepList){
+                            obj.config.objStepNum = arrStepList.length;///
+                            if (obj.config.objStepNum === 0) {///继续轮询
+                                obj.get(1);
+                                return;
+                            }
+                            for (var i in arrStepList) {
+                                obj.config.objStepNum--;
+                                var objStep = arrStepList[i];
+                                obj.reset.selLine(objStep.side, objStep.indexWidth, objStep.indexHeight);///
+                            }
+                            obj.loadToggle(false);///
+                        });
+                    }, 1500);
+                },
+                over: function(){//游戏结束
+                    var obj = Game;
+                    var params = {
+                        cid: obj.config.cid,
+                        id: obj.getRandom()
+                    }
+                    $.getJSON('games/gridcolor/over', params, function(data){
+                        if (data == 1 || data == 0) {
+                            ///obj.div.btn.$reset.attr('disabled', false);
+                        } else {
+                            alert(obj.msg.timeout);
+                        }
+                    });
+                },
+                loadToggle: function(flag){
+                    $('#load').toggle(flag);///
+                },
+                addScore: function(score){//加分
+                    var obj = Game;
+                    obj.div.players.$score.eq(obj.players.index).text(function(i, text){
+                        return Number(text) + score;
+                    });
+                },
+                changePlayer: function(){//切换选手
+					var obj = Game;
+					var index = obj.players.index = (obj.players.index + 1) % 2;
+					obj.div.players.$index.attr('checked', false).eq(index).attr('checked', true);
+                },
+                checkDone: function(){//检查是否达到结束条件
+                    var obj = Game;
+                    if (!obj.div.$box.not('.select').length) {
+                        obj.players.isPlaying = 0;
+                        var ScoreMax = 0,
+                            indexMax = 0;
+                        obj.div.players.$score.text(function(i, text){
+                            var num = Number(text);
+                            if (ScoreMax < num) {
+                                ScoreMax = num;
+                                indexMax = i + 1;
+                            }
+                        });
+                        if ( obj.config.mode == 2 ) {
+                            if (obj.config.indexPlayer == 0) {
+                                obj.over();
+                            }
+                            obj.div.btn.$reset.attr('disabled', false);
+                        }
+                        alert('恭喜' + indexMax + '号玩家胜出！');///平局
+                        return true;
+					}
+					return false;
+                }
+            };
+            Game.init();
+        });
+    </script>
+</head>
+<body>
+    <div id="wrap" class="marginauto p10 tc" style="width:1000px;">
+        <table id="board"></table>
+        <ul id="control">
+            <li>
+                <select id="listMode">
+                    <option value="0">玩家对战</option>
+                    <option value="1">人机对战</option>
+                    <option value="2">网络对战</option>
+                </select>
+                <a id="rule" href="#">规则</a>
+                <div id="rule-detail" style="display:none;">玩家选择边线，成环则得分继续选择，否则轮换对方，最后分高者为胜。</div>
+            </li>
+            <li id="player">
+                <ul>
+                    <li class="player">
+                        <input type="checkbox" class="index" value="0" disabled="disabled" /> 1号 红方(<span class="score">0</span>)<br />
+                    </li>
+                    <li class="player">
+                        <input type="checkbox" class="index" value="1" disabled="disabled" /> 2号 蓝方(<span class="score">0</span>)
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <input type="button" id="btnReset" value="重新开始" />
+                <input type="button" id="btnCreate" value="创建房间" />
+                <input type="button" id="btnJoin" value="加入房间" />
+                <input type="button" id="btnOut" value="退出房间" />
+            </li>
+            <li>
+				<div class="loading hide"></div>
+            </li>
+        </ul>
+    </div>
+    <div class="marginauto pt10 clear tc f14">gridcolor maked by xw332</div>
+</body>
+</html>

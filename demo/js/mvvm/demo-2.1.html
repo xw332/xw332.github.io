@@ -1,0 +1,61 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>联动教学 - 级联select</title>
+  </head>
+  <body>
+    <div ms-controller="page">
+      <select ms-duplex="val1">
+        <option ms-repeat-el="arr1" ms-value="el.id">{{el.name}}</option>
+      </select>
+      <select ms-duplex="val2">
+        <option ms-repeat-el="arr2" ms-value="el.id" ms-if-loop="el.pid == val1">{{el.name}}</option>
+      </select>
+      <select ms-duplex="val3">
+        <option ms-repeat-el="arr3" ms-value="el.id" ms-if-loop="el.pid == val2">{{el.name}}</option>
+      </select>
+    </div>
+
+    <script src="../lib/avalon.mobile.js"></script>
+    <script>
+      var data = [
+        [
+          {id:'0', name:'浙江'}
+        ]
+      , [
+          {id:'2', pid:'0', name:'杭州'}
+        , {id:'3', pid:'0', name:'温州'}
+        ]
+      , [
+          {id:'4', pid:'2', name:'西湖区'}
+        , {id:'5', pid:'2', name:'上城区'}
+        , {id:'6', pid:'3', name:'鹿城区'}
+        , {id:'7', pid:'3', name:'瓯海区'}
+        ]
+      ];
+      var vm = avalon.define('page', function(vm) {
+        // 获取默认值
+        var getFirstId = function(list, pid) {
+          for (var i = 0; i < list.length; i++) {
+            if (list[i].pid == pid) {
+              return list[i].id;
+            }
+          };
+        };
+        vm.arr1 = data[0];
+        vm.val1 = '0' || vm.arr1[0].id;
+        vm.arr2 = data[1];
+        vm.val2 = '3' || getFirstId(vm.arr2, vm.val1);
+        vm.arr3 = data[2];
+        vm.val3 = '6' || getFirstId(vm.arr3, vm.val2);
+      });
+      vm.$watch('val1', function(id) {
+        vm.val2 = getFirstId(vm.arr2, id);
+      });
+      vm.$watch('val2', function(id) {
+        vm.val3 = getFirstId(vm.arr3, id);
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,158 @@
+<html xmlns="http://www.w3.org/1999/xhtml" >
+<head>
+    <title>小游戏演示</title>
+    <style type="text/css">
+		#box_player_color { width:20px; height:10px; display:inline-block; }
+		.line { text-align:center; clear:both; }
+			.item { width:50px; height:60px; float:left; margin:10px; border:1px solid #000; }
+				.item_1 { background:red; }
+				.item_2 { background:yellow; }
+    </style>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var Game = {
+                config: {
+                    items: {//行与棋子
+                        str_line: '<div class="line"/>',
+                        str_item: '<div class="item"/>'
+                    },
+                    line_num: 4//总行数
+                },
+                playerset: {
+                    player: {//玩家定义
+                        color: null,
+                        step: 1,
+                        score: 0
+                    },
+                    play_time: 0,//当前盘数
+                    player_now: 0,//当前选手序号
+                    players: [],//选手数组
+                    player_type: '1'//对战类型（1电脑，2玩家）
+                },
+                init: function () {//初始化游戏元素
+                    var obj = Game;
+                    //增加游戏盘数
+                    ++obj.playerset.play_time;
+                    //初始化玩家
+                    obj.playerset.players = [];
+                    var players = obj.playerset.players;
+                    var funplayer = new Function();
+                    funplayer.prototype = obj.playerset.player;
+                    players.push(new funplayer());
+                    players.push(new funplayer());
+                    players[0].color = 'item_1';
+                    players[1].color = 'item_2';
+                    obj.playerset.player_type = $('#sel_type').val();
+                    //初始化行
+                    var strTmp = '';
+                    for (var i = 0; i < obj.config.line_num; i++) {
+                        strTmp += obj.config.items.str_line;
+                    }
+                    $('#body').html(strTmp);
+                    //初始化棋子
+                    $('.line').each(function (i, item) {
+                        strTmp = '';
+                        var time = 2 * i + 1;
+                        for (var j = 0; j < time; j++) {
+                            strTmp += obj.config.items.str_item;
+                        }
+                        $(item).html(strTmp).attr('index', i);
+                    });
+                    $('.item').click(function () {
+                        var $item = $(this);
+                        if ($item.text() === '') {
+                            if ($('.line_sel').length > 0 && !$item.closest('.line').hasClass('line_sel')) {
+                                alert('一次只能取一行之内的棋子！');
+                                return false;
+                            }
+                            var player_now = players[obj.playerset.player_now];
+                            $item
+								.addClass('item_sel ' + player_now.color)
+								.text(player_now.step)
+								.closest('.line')
+									.addClass('line_sel');
+                            obj.checkFinish();
+                        }
+                    });
+                    //当前游戏信息显示
+                    $('#box_play_time').text(obj.playerset.play_time);
+                    obj.playerShow();
+                    //选手切换
+                    $('#btn_change')
+						.unbind('click').click(function () {
+							if ($('.item_sel').length) {
+								var player_now = players[obj.playerset.player_now];
+								if (!$('.' + player_now.color + ':contains(' + player_now.step + ')').length) {
+									alert('您还没有选棋子呢！');
+									return false;
+								}
+								player_now.step++;
+							}
+						    if (obj.playerChange() && obj.playerset.player_type === '1') {
+						        obj.computerSel();
+						    }
+						});
+                    //再来一局
+                    $('#btn_reset')
+						.unbind('click').click(function () {
+						    obj.init();
+						});
+                },
+                playerShow: function () {//当前选手信息显示
+                    var obj = Game;
+                    var player_now = obj.playerset.players[obj.playerset.player_now];
+                    $('#box_player_now').text(obj.playerset.player_now + 1);
+                    $('#box_player_color').removeClass().addClass(player_now.color);
+                },
+                playerChange: function () {//玩家切换
+                    var obj = Game;
+                    var players = obj.playerset.players;                    
+                    obj.playerset.player_now = obj.playerset.player_now ? 0 : 1;
+                    player_now = players[obj.playerset.player_now];
+                    obj.playerShow(player_now);
+                    $('.line_sel').removeClass('line_sel');
+                    return true;
+                },
+                computerSel: function () {//人工智能
+                    var obj = Game;
+                    //选择未选中的行
+                    var $line = $('.line:has(.item:not(.item_sel))');
+                    var $item = $line.eq(obj.getRandom(0, $line.length)).find('.item:not(.item_sel)');
+                    var length = $item.length + 1;
+                    if ($item.length > 1 && $item.length === $('.item:not(.item_sel)').length) {
+                        length--;
+                    }
+                    $item.filter(':lt(' + obj.getRandom(1, length) + ')').click();
+                    obj.playerChange();
+                },
+                checkFinish: function () {//判断本本局游戏是否结束
+                    //是否存在没被选中的棋子
+                    var obj = Game;
+                    if (!$('.item:not(.item_sel)').length) {
+                        alert('玩家' + (obj.playerset.player_now + 1) + ' 输了，再加油哦！');
+                    }
+                },
+                getRandom: function (min, max) {//返回范围内的随机数
+                    return parseInt(Math.random() * (min - max) + max);
+                }
+            };
+            Game.init();
+        });
+    </script>
+</head>
+<body>
+    <div id="box_btn">
+        <input type="button" id="btn_change" value="玩家切换" />
+        <input type="button" id="btn_reset" value="再来一局" />
+        <select id="sel_type">
+            <option value="1">对战电脑</option>
+            <option value="2">对战玩家</option>
+        </select>
+	</div>
+    <div id="box_info">
+        当前盘数：<span id="box_play_time"></span> 当前玩家：<span id="box_player_now"></span>号 <span id="box_player_color"></span>
+    </div>
+    <div id="body"></div>
+</body>
+</html>

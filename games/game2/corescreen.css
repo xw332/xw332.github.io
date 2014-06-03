@@ -1,0 +1,42 @@
+body,h1,h2,h3,h4,h5,h6,hr,p,blockquote,dl,dt,dd,ul,ol,li,pre,form,fieldset,legend,button,input,textarea,th,td{margin:0;padding:0;}body,button,input,select,textarea{font:12px/1.5 tahoma,arial,\5b8b\4f53,sans-serif;}h1,h2,h3,h4,h5,h6{font-size:100%;}address,cite,dfn,em,var{font-style:normal;}code,kbd,pre,samp{font-family:courier new,courier,monospace;}small{font-size:12px;}ul,ol{list-style:none;}a{text-decoration:none;}a:hover{text-decoration:underline;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}legend{color:#000;}fieldset,img{border:0;}button,input,select,textarea{font-size:100%;}table{border-collapse:collapse;border-spacing:0;}html,body,div,span,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,address,cite,code,del,dfn,em,img,ins,kbd,q,samp,small,strong,sub,sup,var,b,i,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;font-size:100%;vertical-align:baseline;}body{line-height:1;}table{border-collapse:collapse;border-spacing:0;}section,article,aside,header,footer,nav,dialog,figure{display:block;}figure{margin:0;}
+.clearfix:after{content:".";display:block;height:0;clear:both;visibility:hidden;}.clearfix{display:inline-block;}/* Hides from IE-mac \*/* html .clearfix{height:1%;}.clearfix{display:block;}/* End hide from IE-mac */ .fl{float:left;}.fr{float:right;}.hidden{display:none!important;}.cb{clear:both;}.cl{clear:left;}.cr{clear:right;}.tl{text-align:left;}.tr{text-align:right;}.tc{text-align:center;}.vm{vertical-align:middle;}.pr{position:relative;}.pa{position:absolute;}.fn{font-weight:normal;}.fb{font-weight:bold;}.zoom{zoom:1;}.p6{padding:6px;}.p10{padding:10px;}.pt5{padding-top:5px;}.ml5{margin-left:5px;}.mr5{margin-right:5px;}.mt5{margin-top:5px;}.mb5{margin-bottom:5px;}.mr10{margin-right:10px;}.ml10{margin-left:10px;}.ml10{margin-left:10px;}.ml20{margin-left:20px;}.ml30{margin-left:30px;}.ml40{margin-left:40px;}.mr20{margin-right:20px;}.mr29{margin-right:29px;}.mr30{margin-right:30px;}.mr40{margin-right:40px;}.mr50{margin-right:50px;}.pt10{padding-top:10px;}.pb10{padding-bottom:10px;}.pb20{padding-bottom:20px;}.pb30{padding-bottom:30px;}.pb40{padding-bottom:40px;}.pb50{padding-bottom:50px;}.pl10{padding-left:10px;}.pl15{padding-left:15px;}.pr15{padding-right:15px;}.pt20{padding-top:20px;}.pb30{padding-bottom:30px;}.pt30{padding-top:30px;}.pr10{padding-right:10px;}.pl20{padding-left:20px;}.pl30{padding-left:30px;}.pr20{padding-right:20px;}.mb10{margin-bottom:10px;}.mb20{margin-bottom:20px;}.mt10{margin-top:10px;}.mt20{margin-top:20px;}.mt15{margin-top:15px;}.mt17{margin-top:17px;}.ml60{margin-left:60px;}.ml80{margin-left:80px;}.ml100{margin-left:100px;}.ml120{margin-left:120px;}.arial{font-family:arial;}
+input, textarea, select {padding:1px;}
+.vb {vertical-align: bottom;}
+.width100 { width: 100% }
+.width99 { width: 99% }
+.width98 { width: 98% }
+.lineheight20 { height:20px; line-height:20px; }
+.lineheight30 { height:30px; line-height:30px; }
+.lineheight40 { height:40px; line-height:40px; }
+.mtb10 { margin-top:10px; margin-bottom:10px; }
+.marginauto { margin-left:auto; margin-right:auto; }
+.ptb10 { padding-top:10px; padding-bottom:10px; }
+.plr20 { padding-left:20px; padding-right:20px; }
+.clear { clear: both; }
+.hide { display:none!important; }
+.strong { font-weight:bold; }
+.fn { font-size:100%; font-weight:normal; }
+.fwn { font-size:100%; font-weight:normal; }
+.f14 { font-size:14px; font-weight:bold; }
+.f15 { font-size:15px; font-weight:bold; }
+.hand { cursor:pointer; }
+.red { color: #f00; }
+.red-b, .red_b { color: #f00; font-weight:bold; }
+.redc30 { color: #C30; }
+.redc30-b, .c_red_b { color:#C30; font-weight:bold; }
+.blue { color: blue; }
+.blue-b, .blue_b { color: blue; font-weight:bold; }
+.gray87 { color: #878787; }
+.black { color:#000; }
+.black-bd { border:solid 1px #000; }
+.white-bk { background-color:#fff; }
+.dashed { background:transparent url("dashed.gif") repeat-x scroll 0 0; height:1px; line-height:1px; font-size:0; }
+.loading { background:url("loading-32-32.gif") no-repeat scroll 50% 50% #FFF; width:32px; height:32px; }
+body{font:normal 12px/1.5 'Tahoma','simsun';}
+body { margin: 1px 0 8px; background:#fff; }
+input { vertical-align:middle; }
+input[type="text"],input[type="password"] { height:20px; border:1px solid #6BC334; }
+.typeText { border:1px solid #6BC334; }
+input.typeText { height:20px; }
+.curve-bd, .curve5-bd, .curve15-bd { border:1px solid #666; }
+input[type="button"] { padding:0 5px; }

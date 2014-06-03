@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>1+1教学</title>
+  </head>
+  <body>
+    <div ms-controller="page">
+      x，{{x}}：{{typeof x}}
+      <br>
+      <input type="text" value="x">
+      <input type="text" ms-value="x">
+      <input type="text" ms-duplex="x">
+      <br>
+      t1_1：{{typeof t1_1}}
+      ，t1_2：{{typeof t1_2}}
+      ，t1_3：{{typeof t1_3}}
+      ，t1_4：{{typeof t1_4}}
+      <br>
+      <input type="text" ms-duplex="t1_1">
+      +
+      <input type="text" ms-duplex="t1_2">
+      =
+      {{t1_3}}
+      <input type="text" ms-value="t1_4">
+      <input type="text" ms-value="+t1_1 + +t1_2">
+      {{+t1_1 + +t1_2}}
+      <button ms-click="f1">计算</button>
+      <br>
+      t2_1：{{t2_1}}，{{typeof t2_1}}
+      ，t2_2：{{t2_2}}，{{typeof t2_2}}
+      <br>
+      <input type="range" ms-duplex="t2_1" max="50">
+      <input type="text" ms-duplex="t2_sign">
+      <select ms-duplex="t2_sign">
+        <option value="+">+</option>
+        <option value="-">-</option>
+        <option value="*">*</option>
+        <option value="/">/</option>
+      </select>
+      <input type="range" ms-duplex="t2_2">
+      =
+      <input type="text" ms-value="t2_3">
+    </div>
+
+    <script src="../lib/avalon.mobile.js"></script>        
+    <script>
+      var vm = avalon.define('page', function(vm) {
+        vm.x = 1
+
+        vm.t1_1 = 1
+        vm.t1_2 = 1
+        vm.t1_3 = '?'
+        vm.f1 = function() {
+          vm.t1_3 = +vm.t1_1 + +vm.t1_2
+        }
+        vm.t1_4 = {
+          get: function() {
+            return +this.t1_1 + +this.t1_2
+          }
+        }
+
+        vm.t2_sign = '+'
+        vm.t2_1 = 4
+        vm.t2_2 = 2
+        vm.t2_3 = {
+          get: function() {
+            var res
+            var oFnList = {
+              '+': function(x, y) {
+                return x + y;
+              }
+            , '-': function(x, y) {
+                return x - y;
+              }
+            , '*': function(x, y) {
+                return x * y;
+              }
+            , '/': function(x, y) {
+                return x / y;
+              }
+            , 'default': function() {
+                return '未知计算公式';
+              }
+            }
+            var fn = oFnList[this.t2_sign] || oFnList['default']
+            return fn(+this.t2_1, +this.t2_2);
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

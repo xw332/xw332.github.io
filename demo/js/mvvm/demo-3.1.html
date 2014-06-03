@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>联动教学 - 全选</title>
+  </head>
+  <body>
+    <div ms-controller="page">
+      <ul>
+        <li>
+          <input type="checkbox" ms-click="fCheckAll" ms-checked="bCheckAll"/>全选
+        </li>
+        <li ms-repeat-el="aList">
+          <input type="checkbox" ms-value="el" ms-duplex="aListSel"/>{{el}}
+        </li>
+      </ul>
+    </div>
+    <script src="../lib/avalon.mobile.js"></script>
+    <script>
+      var vm = avalon.define('page', function(vm) {
+        vm.aList = ['1', '2', '3', '4']
+        vm.aListSel = ['2', '3']
+        vm.bCheckAll = vm.aList.length === vm.aListSel.length
+        vm.fCheckAll = function() {
+          vm.aListSel = this.checked ? vm.aList : []
+        }
+      })
+      vm.aListSel.$watch('length', function(n) {
+        vm.bCheckAll = n === vm.aList.length
+      })
+    </script>
+  </body>
+</html>

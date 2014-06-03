@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>测试datetime-local输入控件</title>
+    <script src="lib/avalon.mobile.js"></script>        
+  </head>
+  <body ms-controller="xxx">
+    <button ms-click="f1">点击测试</button>
+    <input type="datetime" ms-duplex="time">
+    <input type="datetime-local" ms-duplex="time">
+
+    <script>
+      var model = avalon.define("xxx", function(vm) {
+        var time1 = '2014-04-23 01:02:12'
+        vm.f1 = function() {
+          vm.time = time1.replace(' ', 'T')
+        }
+        vm.time = time1
+      })
+    </script>
+  </body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>添加删除列表</title>
+    <script src="lib/require-jquery.js"></script>        
+  </head>
+  <body>
+    <div class="yp-addList">
+      <a href="#" class="yp-add">添加</a>
+      <table class="yp-list">
+        <tr class="yp-line">
+          <td>
+            <input type="text">
+            <a href="#" class="yp-del">删除</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <script>
+      $(function() {
+        $('.yp-addList').each(function() {
+          var $yp_list = $(this)
+            , $list = $yp_list.find('.yp-list')
+            , $line = $yp_list.find('.yp-line:eq(0)').clone();
+          
+          // 列表容器
+          $list = $list.length ? $list : $yp_list;
+          // 清空输入框
+          $line.find('input:text').val('');
+          // 事件绑定
+          $yp_list
+            .on('click.page', '.yp-add', function() {
+              $list.append($line.clone());
+            })
+            .on('click.page', '.yp-del', function() {
+              $(this).closest('.yp-line').remove();
+            });
+        });
+      });
+    </script>
+  </body>
+</html>

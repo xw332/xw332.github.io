@@ -1,0 +1,84 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>联动教学 - 商品型号联动</title>
+    <style>
+      li {
+        margin-top: 10px;
+      }
+      li span {
+        display: inline-block;
+        margin-right: 10px;
+        padding:5px;
+        border: 1px solid #444;
+      }
+      li span.active {
+        border: 1px solid red;
+      }
+    </style>
+  </head>
+  <body>
+    <div ms-controller="page">
+      <ul>
+        <li>
+          <span ms-repeat-el="arr1" ms-click="fSelect(el)" ms-class="active:el.select">{{el.name}}</span>
+        </li>
+        <li>
+          <span ms-repeat-el="arr2" ms-click="fSelect(el)" ms-class="active:el.select">{{el.name}}</span>
+        </li>
+        <li>
+          <span ms-repeat-el="arr3" ms-click="fSelect(el)" ms-class="active:el.select">{{el.name}}</span>
+        </li>
+      </ul>
+    </div>
+    <script src="../lib/avalon.mobile.js"></script>
+    <script>
+      var data = [
+        [
+          {id:'1', name:'111', select:true, change:{
+            'b': true
+          , '@': true
+          , '%': true
+          }}
+        , {id:'2', name:'222', select:false, change:{
+            'a': true
+          , 'c': true
+          , '#': true
+          }}
+        , {id:'3', name:'333', select:false, change:{}}
+        ]
+      , [
+          {id:'a', name:'aaa', select:false}
+        , {id:'b', name:'bbb', select:false}
+        , {id:'c', name:'ccc', select:false}
+        ]
+      , [
+          {id:'@', name:'@@@', select:false}
+        , {id:'#', name:'###', select:false}
+        , {id:'%', name:'%%%', select:false}
+        ]
+      ]
+      var vm = avalon.define('page', function(vm) {
+        vm.arr1 = data[0]
+        vm.arr2 = data[1]
+        vm.arr3 = data[2]
+        vm.fSelect = function(el) {
+          if (el.change) {
+            var oChangeList = el.change.$model || el.change
+            function fCheckList(list) {
+              for (var i = list.length; i--;) {
+                list[i].select = (list[i].id in oChangeList)
+              };
+            }
+            fCheckList(vm.arr1);
+            fCheckList(vm.arr2);
+            fCheckList(vm.arr3);
+          }
+          el.select = true;
+        }
+        vm.fSelect(vm.arr1[0]);
+      })
+    </script>
+  </body>
+</html>

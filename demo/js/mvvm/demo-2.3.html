@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>联动教学 - 级联select</title>
+  </head>
+  <body>
+    <div ms-controller="page">
+      <select ms-duplex="val1">
+        <option ms-repeat-el="arr" ms-value="el.id">{{el.name}}</option>
+      </select>
+      <select ms-duplex="val2">
+        <option ms-repeat-el="arr2" ms-value="el.id">{{el.name}}</option>
+      </select>
+      <select ms-duplex="val3">
+        <option ms-repeat-el="arr3" ms-value="el.id">{{el.name}}</option>
+      </select>
+    </div>
+
+    <script src="../lib/avalon.mobile.js"></script>
+    <script>
+      var data = [
+        {id:'0', name:'浙江', children: [
+          {id:'2', pid:'0', name:'杭州', children: [
+            {id:'4', pid:'2', name:'西湖区'}
+          , {id:'5', pid:'2', name:'上城区'}
+          ]}
+        , {id:'3', pid:'0', name:'温州', children: [
+            {id:'6', pid:'3', name:'鹿城区'}
+          , {id:'7', pid:'3', name:'瓯海区'}
+          ]}
+        ]}
+      ];
+      var vm = avalon.define('page', function(vm) {
+        // 获取指定节点
+        vm.getNode = function(list, id) {
+          for (var i = 0; i < list.length; i++) {
+            if (list[i].id == id) {
+              return list[i];
+            }
+          };
+        };
+        vm.arr = data;
+        vm.node1 = vm.arr[0];
+        vm.val1 = vm.node1.id;
+        vm.arr2 = vm.node1.children;
+        vm.node2 = vm.arr2[0];
+        vm.val2 = vm.node2.id;
+        vm.arr3 = vm.node2.children;
+        vm.node3 = vm.arr3[0];
+        vm.val3 = vm.node3.id;
+      });
+      vm.$watch('val1', function(id) {
+        vm.node1 = vm.getNode(vm.arr, id);
+        vm.arr2 = vm.node1.children;
+        vm.node2 = vm.arr2[0];
+        vm.val2 = vm.node2.id;
+      });
+      vm.$watch('val2', function(id) {
+        vm.node2 = vm.getNode(vm.node1.children, id);
+        vm.arr3 = vm.node2.children;
+        vm.node3 = vm.arr3[0];
+        vm.val3 = vm.node3.id;
+      });
+    </script>
+  </body>
+</html>
