@@ -32,7 +32,7 @@
       <br>
       <input type="range" ms-duplex="t2_1" max="50">
       <input type="text" ms-duplex="t2_sign">
-      <select ms-duplex="t2_sign">
+      <select ms-duplex="t2_sign" data-duplex-changed="f2" ms-data-el="{id:1}">
         <option value="+">+</option>
         <option value="-">-</option>
         <option value="*">*</option>
@@ -86,6 +86,9 @@
             var fn = oFnList[this.t2_sign] || oFnList['default']
             return fn(+this.t2_1, +this.t2_2);
           }
+        }
+        vm.f2 = function(val) {
+          console.log(val, this['data-el']);
         }
       })
     </script>
