@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  <title>Canvas绘图</title>
+  <style type="text/css">
+  div {
+    width: 30px;
+    height: 30px;
+    background: blue;
+  }
+  </style>
+</head>
+
+<body>
+  <canvas class="process" width="248px" height="248px">0%</canvas>
+  <!-- <div></div> -->
+</body>
+<script src="../../common/jquery.js"></script>
+<script>
+// $(document).ready(function() {
+//drawProcess();
+i = 0;
+var t = setInterval("addNum()", 20);
+// });
+
+function addNum() {
+  if (i < 100) {
+    i++;
+    $('canvas.process').text(i + "%");
+    drawProcess();
+  } else {
+    clearInterval(t);
+  }
+}
+
+function drawProcess() {
+  $('canvas.process').each(function() {
+    var text = $(this).text();
+    var process = text.substring(0, text.length - 1);
+    var canvas = this;
+    var context = canvas.getContext('2d');
+    // context.clearRect(0, 0, 48, 48);
+    context.beginPath();
+    // context.moveTo(24, 24);
+    context.arc(124, 124, 124, Math.PI * 0.8, Math.PI * 2, false);
+    context.closePath();
+    context.fillStyle = '#383838';
+    context.fill();
+    context.beginPath();
+    context.moveTo(124, 124);
+    context.arc(124, 124, 124, Math.PI * 0.8, Math.PI * 2 * process / 100, false);
+    context.closePath();
+
+    context.fillStyle = '#ffd57d'; //边框颜色
+    context.fill();
+    context.beginPath();
+    // context.moveTo(24, 24);
+    context.arc(124, 124, 110, 0, Math.PI * 2, true);
+    context.closePath();
+    context.fillStyle = 'rgba(255,255,255,1)';
+    context.fill();
+    // context.beginPath();
+    // context.arc(24, 24, 18.5, 0, Math.PI * 2, true);
+    context.closePath();
+
+
+
+    // context.strokeStyle = '#ddd';
+    // context.stroke();
+    // context.font = "bold 9pt Arial";
+    // context.fillStyle = '#2a2';
+    // context.textAlign = 'center';
+    // context.textBaseline = 'middle';
+    // context.moveTo(24, 24);
+    // context.fillText(text, 24, 24);
+  });
+}
+</script>
+
+</html>

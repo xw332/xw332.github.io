@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>连击效果演示2</title>
+  <style>
+  body {
+    background: #000;
+    font-family: Microsoft Yahei;
+  }
+  .box {
+    display: none;
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 100px auto;
+    text-align: right;
+    font-size: 60px;
+    color: #1D9AE6;
+  }
+  .box.active {
+    display: block;
+  }
+  .numlast {
+    position: absolute;
+  }
+  .numlast.moving {
+    opacity: 0;
+  }
+  .num1 {
+    right: 80px;
+    bottom: 0;
+    z-index: 1;
+  }
+  .num2 {
+    right: 40px;
+    bottom: 0;
+    z-index: 2;
+  }
+  .num3 {
+    right: 0;
+    bottom: 0;
+    z-index: 3;
+  }
+  .numlast.active {
+    transform: scale(5);
+  }
+  .num1.active {
+    display: inline;
+    bottom: -10px;
+    right: -60px;
+    animation: zoomin1 .15s .3s ease-out forwards;
+  }
+  .num2.active {
+    display: inline;
+    bottom: -10px;
+    right: -60px;
+    animation: zoomin2 .15s .15s ease-out forwards;
+  }
+  .num3.active {
+    display: inline;
+    bottom: -10px;
+    right: -60px;
+    animation: zoomin3 .15s .01s ease-out forwards;
+  }
+  @keyframes zoomin1 {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      right: 80px;
+      bottom: 0;
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes zoomin2 {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      right: 40px;
+      bottom: 0;
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @keyframes zoomin3 {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      right: 0;
+      bottom: 0;
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  </style>
+</head>
+<body>
+  <div class="box active">
+    <span class="numlast num1 active"></span>
+    <span class="numlast num2 active"></span>
+    <span class="numlast num3 active"></span>
+  </div>
+
+  <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+  <script src="lib/velocity.min.js"></script>
+  <script>
+  var ui = {};
+  ui.$box = $('.box');
+  ui.$num = $('.num');
+  ui.$numLast = $('.numlast');
+  // 随机大小
+  function fGetRandom(max, min) {
+    min = min || 0;
+    var range = max - min;
+    return (min + Math.round(Math.random() * range));
+  };
+  // 获取数字最后一位
+  function fGetNumLast(num) {   
+    num = num + '';
+    return +num.charAt(num.length - 1);///
+  };
+  // 更新显示
+  var nTimer_RenderNum;
+  function fRenderNum(numall, numlast) {
+    clearTimeout(nTimer_RenderNum);
+    ui.$numLast.text(function(i, num) {
+      return (numall + '')[i];
+    });
+    if (numlast != null) {
+      ui.$numLast.removeClass('active');
+      setTimeout(function() {
+        ui.$numLast.addClass('active moving');///
+      }, 10);
+      nTimer_RenderNum = setTimeout(function() {
+        ui.$numLast.removeClass('active moving');
+      }, 500);
+    }
+  };
+  // 连击
+  var aNumList = [0,1,2,3,4,5,6,7,8,9];
+  var nNumNow = 100;
+  var nNumRender = nNumNow;
+  var isCombo = true;///
+  function fCombo() {
+    if (!isCombo) {
+      nNumRender = nNumNow;
+      fRenderNum(nNumRender);
+      isCombo = true;
+    } else {
+      function fRenderCombo() {
+        var nNumLast;
+        if (nNumRender < nNumNow) {
+          nNumLast = fGetNumLast(nNumRender + 1) % 10;
+        }
+        fRenderNum(nNumRender, nNumLast);///
+        if (nNumRender < nNumNow) {
+          ++nNumRender;
+        }
+        if (nNumRender < nNumNow) {
+          var nDelay = 500;///
+          if (nNumRender % fGetRandom(12, 4) === 0) {
+            nDelay = 1500;///
+          }/**/
+          setTimeout(function() {
+            fRenderCombo();
+          }, nDelay);
+        } else {
+          setTimeout(function() {
+            isCombo = false;
+          }, 30000);
+        }
+      };
+      if (nNumRender <= nNumNow) {
+        fRenderCombo();
+      }
+    }
+  };
+
+  // 调用测试
+  nNumNow = 100;
+  fCombo();
+  nNumNow += fGetRandom(999, 999);
+  fCombo();
+  </script>
+</body>
+</html>
