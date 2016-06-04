@@ -1,0 +1,271 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>操作员后台工具</title>
+  <link rel="stylesheet" href="../assets/reset.css">
+  <link rel="stylesheet" href="../assets/swiper-3.3.1.min.css">
+  <link rel="stylesheet" href="../assets/pnotify.css">
+  <link rel="stylesheet" href="../assets/pnotify.brighttheme.css">
+  <link rel="stylesheet" href="../assets/emoji.css">
+  <link rel="stylesheet" href="../assets/iconfont.css">
+  <link rel="stylesheet" href="../assets/style.css">
+  <style>
+  strong {
+    font-weight: bold;
+  }
+  
+  .chat-list .chat {
+    color: #000;
+  }
+  .chat-list .join {
+    color: #999;
+  }
+  .chat-list .light {
+    color: green;
+  }
+  .chat-list .paychat {
+    color: orange;
+  }
+  .chat-list .gift {
+    color: red;
+  }
+
+  .ui-pnotify button +button {
+    margin-left: 20px;
+  }
+  </style>
+</head>
+
+<body>
+  <div class="wrap clearfix">
+    <div class="subsidiary-area">
+      <div class="subsidiary-area-con">
+        <div class="anchor-area clearfix" id="js-box-anchor">
+          <script id="t_anchor" type="text/regular">
+          <div class="avatar-box fl">
+            <img src="{portrait}" />
+            <!-- <div class="info"></div> -->
+          </div>
+          <div class="anchor-info">
+            <!-- 已关注 加class:followed -->
+            <!-- <div class="btns follow-btn">关注</div> -->
+
+            <div>{nickname}<strong>（要求：{msg_count}条/分钟）</strong></div>
+            <div>星光：{starlight} 在线人数：{online}</div>
+
+          </div>
+          </script>
+        </div>
+        <div class="swiper-container swiper-container-horizontal swiper-container-free-mode">
+          <div class="swiper-wrapper" id="js-list-user">
+            <script id="t_userlist" type="text/regular">
+            {#list list as el}
+            <li class="swiper-slide" title="{@(el.nickname)}">
+              <a class="avatar-box small fl" href="#js-ibox-user" data-toggle="modal" on-click={this.showCard(el)}>
+                <img src="{@(el.portrait)}" />
+              </a>
+            </li>
+            {/list}
+            </script>
+          </div>
+        </div>
+      </div>
+      <!-- 用户信息 -->
+      <div class="user-info-pop js-pop" id="js-ibox-user">
+        <div class="anchor-area clearfix">
+          <i class="icon iconfont icon-close js-close"></i>
+          <div id="js-box-usercard">
+            <script id="t_usercard" type="text/regular">
+            <div class="avatar-box fl">
+              <img src="{portrait}">
+            </div>
+            <div class="anchor-info">
+              <div>{nickname}</div>
+              <div>星光：{starlight}</div>
+            </div>
+            </script>
+          </div>
+        </div>
+      </div>
+      <!-- 用户信息 END -->
+      <div class="chat-area" id="js-box-msg">
+        <!-- 聊天消息区 -->
+        <ul class="chat-list" id="js-list-msg">
+          <script id="t_msglist" type="text/regular">
+          {#list this.data as el}
+          <li class="clearfix">
+            <p>
+              <label href="#js-ibox-user" class="name" data1-toggle="modal" on-click={this.showCard(el)}>{@(el.nickname)}：</label><span class="{this.cName_msgtype(el)}" r-html="{@(el.txt|msgformat)}"></span>
+            </p>
+          </li>
+          {/list}
+          </script>
+        </ul>
+        <!-- 聊天消息区 END -->
+      </div>
+      <div class="action-area" id="js-box-chat">
+        <!-- 表情弹窗 -->
+        <script id="t_face" type="text/regular">
+        <div class="emot-pop js-pop" r-hide={!show}>
+          <ul class="emot-con clearfix">
+            {#list @(sys) as el}
+            <li title="{@(el.key)}" on-click={this.select(el)}>
+              <img src="{@(el.src)}">
+            </li>
+            {/list}
+          </ul>
+        </div>
+        </script>
+        <!-- /表情弹窗 -->
+        <!-- 礼物弹窗 -->
+        <script id="t_gift" type="text/regular">
+        <div class="gift-pop js-pop">
+          <div role="form">
+            <div class="row">
+              礼物：<select r-model={giftid}>
+                {#list giftlist as el}
+                <option value="{@(el.giftid)}">{@(el.giftname)}&nbsp;({@(el.price)} {@(el.unit==0?'星光':'钻石')})</option>
+                {/list}
+              </select>
+            </div>
+            <div class="row">
+              数量：<input type="text" r-model={combo}>
+            </div>
+            <div class="row">
+              <button type="button" on-click="{this.submit()}">赠送</button>
+            </div>
+          </div>
+        </div>
+        </script>
+        <!-- /礼物弹窗 -->
+        <script id="t_chatbox" type="text/regular">
+        <div class="action-list">
+          <select r-model={uid}>
+            {#list userlist as el}
+            <option value="{@(el.uid)}">{@(el.nickname)}</option>
+            {/list}
+          </select>
+          <!-- <input type="checkbox" r-model={islock}>锁定 -->
+          <input type="checkbox" r-model={issp}>弹幕&nbsp;
+          <i class="icon iconfont icon-dianzan" on-click={this.light()}></i>
+          <!-- <i class="icon iconfont icon-biaoqing" id="js-btn-face"></i>
+          <i class="icon iconfont icon-gift" id="js-btn-gift"></i> -->
+        </div>
+        <facebox show={isShowFace} on-select={this.addEmot($event)}></facebox>
+        <form class="action-send clearfix" id="js-box-msgsend">{type}
+          <textarea class="fl" name="txt" placeholder="发送消息" rows="2" ref="txt" r-model={txt} on-enter={this.sendMsg()}></textarea>
+          <div class="send-btn" on-click={this.sendMsg()}>发送</div>
+        </form>
+        </script>
+      </div>
+    </div>
+
+    <style>
+    .main-area {
+      margin-right: 300px;
+      height: 100%;
+    }
+    </style>
+    <script>
+    var flashReady = false;
+    // flash需要的初始化函数
+    function getReady() {
+      return flashReady = true;
+    };
+    // flash需要的日志函数
+    function flashLog(data) {
+      console.log(data); ///
+    };
+    </script>
+    <div class="main-area" id="box-videolist">
+      <embed name="mPlayer" src="../assets/mPlayer.swf" width="100%" height="100%" quality="high" AllowScriptAccess="always"></embed>
+    </div>
+  </div>
+
+  <div id="js-box-login">
+    <script id="t_login" type="text/regular">
+    <!-- 登录弹窗 -->
+    <div class="login-pop">
+      <div class="pop-title">操作员后台工具</div>
+      <form data-type="login">
+        <div>
+          <input name="uname" type="text" placeholder="账号" r-model="uname" />
+        </div>
+        <div>
+          <input name="pwd" type="password" placeholder="密码" r-model="pwd" />
+        </div>
+        <div>
+          <div class="login-btn" data-type="submit" on-click={this.submit()}>登录</div>
+          <!-- <div class="gray-btn">关闭</div> -->
+        </div>
+      </form>
+    </div>
+    <!-- 登录弹窗 END -->
+    <!-- 遮罩 -->
+    <div class="mask mask-login-pop"></div>
+    <!-- 遮罩 END-->
+    </script>
+  </div>
+
+  <script>
+  window.oPageConfig = {};
+  oPageConfig.oUrl = {
+    sSocket: 'ws://xxx.com'
+  , sLogin: 'live/act_login?f=json'
+  , sRoomInfo: 'live/act_room?f=json&roomid=1'
+  , sRoomUserlist: 'live/list_user?f=json&roomid=1'
+  , sRoomRobotlist: 'live/list_robot?f=json&roomid=1'
+  , sRoomGiftlist: 'live/list_gift?f=json&roomid=1'
+  };
+  oPageConfig.oSocket = {
+    sUrlServer: 'ws://xxx.com'
+  };
+  oPageConfig.oFlash = {
+    sPath: '../assets/player.swf'
+  };
+  oPageConfig.oRoomList = {};
+  oPageConfig.nRoomCount = 0;
+  oPageConfig.oEmot = {
+    "sys": [{"key":"[害羞]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/1.gif","width":24,"height":24},{"key":"[鄙视]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/2.gif","width":24,"height":24},{"key":"[发怒]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/3.gif","width":24,"height":24},{"key":"[微笑]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/5.gif","width":24,"height":24},{"key":"[阴险]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/6.gif","width":24,"height":24},{"key":"[流泪]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/7.gif","width":24,"height":24},{"key":"[大兵]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/9.gif","width":24,"height":24},{"key":"[困]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/10.gif","width":24,"height":24},{"key":"[猪头]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/12.gif","width":24,"height":24},{"key":"[奋斗]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/13.gif","width":24,"height":24},{"key":"[坏笑]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/14.gif","width":24,"height":24},{"key":"[晕]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/15.gif","width":24,"height":24},{"key":"[鼓掌]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/16.gif","width":24,"height":24},{"key":"[酷]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/17.gif","width":24,"height":24},{"key":"[色]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/18.gif","width":24,"height":24},{"key":"[发呆]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/19.gif","width":24,"height":24},{"key":"[惊讶]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/20.gif","width":24,"height":24},{"key":"[白眼]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/21.gif","width":24,"height":24},{"key":"[抓狂]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/22.gif","width":24,"height":24},{"key":"[憨笑]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/23.gif","width":24,"height":24},{"key":"[傲慢]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/24.gif","width":24,"height":24},{"key":"[敲打]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/25.gif","width":24,"height":24},{"key":"[衰]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/26.gif","width":24,"height":24},{"key":"[呲牙]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/28.gif","width":24,"height":24},{"key":"[惊恐]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/29.gif","width":24,"height":24},{"key":"[可怜]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/30.gif","width":24,"height":24},{"key":"[流汗]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/31.gif","width":24,"height":24},{"key":"[疑问]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/32.gif","width":24,"height":24},{"key":"[偷笑]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/33.gif","width":24,"height":24},{"key":"[撇嘴]","src":"http:\/\/dlstatic.cdn.zhanqi.tv\/assets\/web\/static\/i\/qq-face\/35.gif","width":24,"height":24}
+    ]
+  };
+  </script>
+  <script src="../script/lib/jquery-3.0.0-rc1.min.js"></script>
+  <script src="../script/lib/swiper-3.3.1.min.js"></script>
+  <script src="../script/lib/pnotify.js"></script>
+  <script src="../script/lib/pnotify.callbacks.js"></script>
+  <script src="../script/lib/emoji.min.js"></script>
+  <script src="../script/lib/regular.min.js"></script>
+  <script src="../script/socket.js"></script>
+  <script src="../script/flash.js"></script>
+  <script src="../script/chat.js"></script>
+
+  <script src="../script/test/mock.js"></script>
+  <script src="../script/test/commTest.js"></script>
+  <script>
+  oPageConfig.oTest = {
+    dataOne: {
+      'uid|+1': 1
+    , 'nickname': '@cname(2)'
+    , 'portrait': '@image(100x100)'
+    , 'msg_count': /\d{2}/
+    , 'starlight': /\d{2}/
+    , 'online': /\d{2}/
+
+    , 'roomid|+1': 1///
+    , 'roomname': '主播-@cname(2)'
+    , 'videosrc': 'rtmp:\/\/pull.a8.com\/live\/1465042103005801'
+    , 'picsrc': 'http://attach.bbs.miui.com/forum/201506/20/230025qyoyf9slyvbbsuzm.png.thumb.jpg?123'
+    , 'busystate|0-2': 1
+
+    , 'giftid|1-10': 1
+    , 'giftname': '礼物@cname(1)'
+    , 'price|101-1314': 1
+    , 'unit|0-1': 1
+    }
+  , listname: 'list|7-10'
+  };
+  </script>
+</body>
+</html>

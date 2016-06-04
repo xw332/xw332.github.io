@@ -1,0 +1,434 @@
+/* ===================================================
+ * v20160604
+ * ===================================================
+ * Copyright xw && napster
+ * =================================================== */
+
+html,
+body {
+  height: 100%;
+  font-size: 12px;
+  overflow: hidden;
+}
+html {
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+*,
+*::before,
+*::after {
+  -webkit-box-sizing: inherit;
+          box-sizing: inherit;
+}
+.wrap {
+  height: 100%;
+}
+
+/********右侧区域*******/
+
+.subsidiary-area {
+  display: flex;
+  float: right;
+  flex-direction: column;
+  width: 300px;
+  height: 100%;
+  border-left: 1px solid #f3f3f3;
+}
+
+.subsidiary-area-con {
+  position: relative;
+  z-index: 12;
+  height: 110px;
+  border-bottom: 1px dashed #ccc;
+  background: #fff;
+}
+
+.subsidiary-area {
+  display: flex;
+  float: right;
+  flex-direction: column;
+  width: 300px;
+  height: 100%;
+  border-left: 1px solid #f3f3f3;
+}
+
+
+/********主播信息*******/
+
+.anchor-info {
+  margin-left: 65px;
+  padding-top: 10px;
+  padding-right: 5px;
+  line-height: 20px;
+}
+
+.anchor-area {
+  position: relative;
+  z-index: 20;
+  padding: 2px;
+  background: #fff;
+}
+
+.follow-btn , .pull-right{
+  float: right;
+  padding: 5px 15px;
+  background: #44b5f3;
+  -webkit-user-select: none;
+          user-select: none;
+}
+
+.follow-btn.followed {
+  background: #ccc;
+}
+
+.pull-right{
+  border: none;
+  /*background: */
+  color:#fff;
+  outline: none;
+  font-size: 14px;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.ui-pnotify-text{
+  font-size: 14px;
+}
+
+.chat-area {
+  position: relative;
+  overflow: auto;
+  border-bottom: 1px dashed #ccc;
+
+  flex: 1;
+}
+
+.user-info-pop {
+  position: absolute;
+  /*top: 0;*/
+  z-index: 10;
+  width: 300px;
+  border-bottom: 1px solid #ccc;
+  background: #fff;
+  transition: transform .3s linear;
+  transform: translateY(-105%);
+  box-shadow: 2px 2px 2px #ccc;
+}
+
+.user-info-pop.active {
+  transform: translateY(0);
+}
+
+.user-info-pop .icon-close {
+  /*float: right;*/
+  position: absolute;
+  right: 10px;
+  margin: 10px 10px 0 0;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.icon-close:hover {
+  color: #333;
+}
+
+
+/********主播信息 END*******/
+
+
+/********聊天区域*******/
+
+.chat-list li {
+  padding: 5px;
+}
+
+.chat-list label {
+  font-weight: initial;
+  color: #1665db;
+}
+
+.chat-list p {
+  line-height: 15px;
+}
+
+
+/********聊天区域 END*******/
+
+
+/********发送消息及相关操作*******/
+
+.action-area {
+  position: relative;
+  margin-top: 5px;
+  padding: 10px;
+  border-top: 1px solid #e5e5e5;
+  border-bottom: 1px solid #dcdcdc;
+  background: #ededed;
+  -webkit-user-select: none;
+          user-select: none;
+}
+
+.action-list select {
+  width: 80px;
+  height: 25px;
+  border: none;
+  border: 1px solid #dcdcdc;
+  outline: none;
+  background: #fff;
+  line-height: 25px;
+}
+
+.action-list .iconfont {
+  margin-right: 5px;
+  font-size: 18px;
+  cursor: pointer;
+  color: #8f8f8f;
+}
+
+.action-list .iconfont:hover {
+  color: orange;
+}
+
+.action-send {
+  margin-top: 10px;
+}
+
+.action-send textarea {
+  width: 215px;
+  padding: 5px;
+  border: 1px solid #dcdcdc;
+  border-radius: 5px;
+  outline: none;
+  line-height: 16px;
+  resize: none;
+}
+
+.send-btn {
+  float: right;
+  width: 44px;
+  height: 44px;
+  border-radius: 5px;
+  background: #44b5f3;
+  font-size: 14px;
+  line-height: 44px;
+  cursor: pointer;
+  -webkit-user-select: none;
+  color: #fff;
+  text-align: center;
+}
+
+.send-btn:hover,
+.login-btn:hover,
+.pull-right
+ {
+  background: #1395dc;
+}
+
+.send-btn:active,
+.login-btn:active {
+  background: #05679c;
+}
+
+
+/********发送消息及相关操作 END*******/
+
+
+/********表情弹窗*******/
+
+.emot-pop {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 10;
+  width: 100%;
+  transform: translateY(-100%);
+}
+.emot-con {
+  border: 1px solid #ccc;
+  border-bottom: none;
+  background: #fff;
+  box-shadow: 2px 2px 2px #ccc;
+}
+
+.emot-con li {
+  float: left;
+  overflow: hidden;
+  width: 28.8px;
+  height: 28.8px;
+  padding: 0;
+  border-right: 1px solid #ccc;
+  border-bottom: 1px solid #ccc;
+  font-size: 0;
+  cursor: pointer;
+}
+.emot-con li:hover {
+  background: #ccc;
+}
+
+.emot-con li img {
+  margin-top: 2px;
+  margin-left: 2px;
+}
+
+/********表情弹窗 END*******/
+
+/********礼物弹窗*******/
+
+.gift-pop {
+  position: absolute;
+  top: 0;
+  right: 15px;
+  z-index: 10;
+  width: 200px;
+  padding: 10px;
+  background: #fff;
+  border: 1px solid #999;
+  transform: translateY(-100%);
+}
+.gift-pop .row {
+  margin-bottom: 10px;
+}
+.gift-pop .row input, .gift-pop .row select {
+  width: 70%;
+  margin-left: 10px;
+}
+.gift-pop .row input {
+  font-size: 14px;
+}
+
+/********表情弹窗 END*******/
+
+
+/********公共类*******/
+
+.avatar-box {
+  position: relative;
+  overflow: hidden;
+  width: 50px;
+  height: 50px;
+  margin: 5px;
+  border-radius: 50%;
+  text-align: center;
+}
+
+.avatar-box.small {
+  width: 30px;
+  height: 30px;
+}
+
+.avatar-box img {
+  width: 100%;
+  height: 100%;
+}
+
+.avatar-box .info {
+  position: absolute;
+  top: 0;
+  z-index: 10;
+  width: 100%;
+  height: 100%;
+  line-height: 60px;
+  color: #fff;
+  text-align: center;
+  opacity: 0;
+}
+
+.avatar-box:hover .info {
+  background: rgba(0, 0, 0, .3);
+  opacity: 1;
+}
+
+.mask {
+  position: absolute;
+  top: 0;
+  z-index: 15;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, .3);
+}
+
+.btns {
+  padding: 5px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  color: #fff;
+  text-align: center;
+}
+
+.btns.follow-btn:hover {
+  background: #1395dc;
+}
+
+.btns.follow-btn:active {
+  background: #05679c;
+}
+
+.btns.followed:hover, .btns.followed:active {
+  background: #ccc;
+}
+
+
+/********公共类 END*******/
+
+
+/********登录窗*******/
+
+.login-pop {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  z-index: 20;
+  /*width: 300px;*/
+  /*height: 200px;*/
+  padding: 30px;
+  border-radius: 5px;
+  background: #fff;
+  font-size: 14px;
+  -webkit-transform: translate(-50%, -50%);
+  box-shadow: 5px 5px 50px #000;
+}
+
+.mask-login-pop {
+  background: rgba(0, 0, 0, .8);
+}
+
+.login-pop .pop-title {
+  margin-bottom: 15px;
+}
+
+.login-pop input {
+  width: 180px;
+  height: 30px;
+  margin-bottom: 15px;
+  padding: 0 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  line-height: 30px;
+}
+
+.login-btn {
+  margin-top: 10px;
+  padding: 10px 60px;
+  border-radius: 5px;
+  background: #44b5f3;
+  font-size: 14px;
+  cursor: pointer;
+  color: #fff;
+  text-align: center;
+}
+
+.gray-btn {
+  margin-top: 10px;
+  padding: 10px 60px;
+  border-radius: 5px;
+  background: #ccc;
+  font-size: 14px;
+  cursor: pointer;
+  color: #fff;
+  text-align: center;
+}
+
+
+/********登录窗 END*******/
