@@ -16,7 +16,7 @@ var oFlashPlayer = {
     }
 
     $.sub('toflash/addRoom', function(e, data) {
-      data.videosrc = data.steamsrc || 'rtmp:\/\/pull.a8.com\/live\/1465103900804684';
+      data.videosrc = data.steamsrc || 'rtmp:\/\/pull99.a8.com\/live\/1465104931014906';
       data.picsrc = data.imagesrc || 'http://attach.bbs.miui.com/forum/201506/20/230025qyoyf9slyvbbsuzm.png.thumb.jpg';
       data.busystate = data.liveStatus || 0;
       data.duration = 30;
