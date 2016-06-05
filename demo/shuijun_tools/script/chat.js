@@ -1,5 +1,5 @@
 /* ===================================================
- * v20160604
+ * v20160605
  * ===================================================
  * Copyright xw
  *
@@ -411,6 +411,10 @@ yp.ready(function() {
       $.pub('page/sendlight', {
         uid: this.data.uid
       });
+    }
+  , loadQK: function() {
+      this.data.txt = this.data.txt_qk;
+      this.data.txt_qk = '快捷语';
     }
   }).$inject('#js-box-chat');
   window.vmChatBox = vmChatBox;///

@@ -15,8 +15,14 @@ var oFlashPlayer = {
       };
     }
 
+    var count = 0;
+    var mapRoom = [
+      'http://183.134.9.35/record2.a8.com/mp4/1464934384331740.mp4?wsiphost=local'
+    , 'http://record2.a8.com/mp4/1464944963778290.mp4'
+    , 'http://183.134.9.36/record2.a8.com/mp4/1464167131074908.mp4?wsiphost=local'
+    ];
     $.sub('toflash/addRoom', function(e, data) {
-      data.videosrc = data.steamsrc || 'rtmp:\/\/pull99.a8.com\/live\/1465104931014906';
+      data.videosrc = mapRoom[count++];
       data.picsrc = data.imagesrc || 'http://attach.bbs.miui.com/forum/201506/20/230025qyoyf9slyvbbsuzm.png.thumb.jpg';
       data.busystate = data.liveStatus || 0;
       data.duration = 30;

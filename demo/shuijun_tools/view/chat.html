@@ -148,9 +148,15 @@
           </select>
           <!-- <input type="checkbox" r-model={islock}>锁定 -->
           <input type="checkbox" r-model={issp}>弹幕&nbsp;
-          <i class="icon iconfont icon-dianzan" on-click={this.light()}></i>
-          <!-- <i class="icon iconfont icon-biaoqing" id="js-btn-face"></i>
-          <i class="icon iconfont icon-gift" id="js-btn-gift"></i> -->
+          <i class="icon iconfont icon-dianzan" title="点亮" on-click={this.light()}></i>
+          <!-- <i class="icon iconfont icon-biaoqing" title="表情" id="js-btn-face"></i>
+          <i class="icon iconfont icon-gift" title="送礼" id="js-btn-gift"></i> -->
+          <select r-model={txt_qk} on-change={this.loadQK()}>
+            <option>快捷语</option>
+            <option>主播好美</option>
+            <option>唱个歌呗</option>
+            <option>妹子都什么时候播啊</option>
+          </select>
         </div>
         <facebox show={isShowFace} on-select={this.addEmot($event)}></facebox>
         <form class="action-send clearfix" id="js-box-msgsend">{type}
