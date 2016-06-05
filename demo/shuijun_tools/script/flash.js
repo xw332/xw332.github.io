@@ -5,19 +5,35 @@ var oFlashPlayer = {
     this.mPlayer = document['mPlayer'];
     if (!this.mPlayer) return false;
 
+    this.dfd = $.Deferred();
+    if (flashReady) {
+      oFlashPlayer.dfd.resolve(true);
+    } else {
+      getReady = function() {
+        oFlashPlayer.dfd.resolve(true);
+        return flashReady = true;
+      };
+    }
+
     $.sub('toflash/addRoom', function(e, data) {
-      data.videosrc = data.steamsrc || 'rtmp:\/\/pull.a8.com\/live\/1465095433498157';
+      data.videosrc = data.steamsrc || 'rtmp:\/\/pull.a8.com\/live\/1465103900804684';
       data.picsrc = data.imagesrc || 'http://attach.bbs.miui.com/forum/201506/20/230025qyoyf9slyvbbsuzm.png.thumb.jpg';
       data.busystate = data.liveStatus || 0;
       data.duration = 30;
-      oFlashPlayer.addRoom(data);
+      oFlashPlayer.dfd.done(function() {
+        oFlashPlayer.addRoom(data);
+      });
     });
     $.sub('toflash/delRoom', function(e, data) {
-      oFlashPlayer.delRoom(data);
+      oFlashPlayer.dfd.done(function() {
+        oFlashPlayer.delRoom(data);
+      });
     });
     $.sub('toflash/updateRoomState', function(e, data) {
       data.busystate = data.liveStatus;///
-      oFlashPlayer.updateRoomState(data);
+      oFlashPlayer.dfd.done(function() {
+        oFlashPlayer.updateRoomState(data);
+      });
     });
 
     /*$('body').on('click', '.box-video', function() {
