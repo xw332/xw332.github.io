@@ -85,7 +85,7 @@ $(function() {
       , content: '40条消息/分钟'
       });
     }, 500);
-    setTimeout(function() {
+    /*setTimeout(function() {
       $.pub('socket/newOrder', {
         roomid: 4
       , roomname: '甜甜的主播4'
@@ -98,7 +98,7 @@ $(function() {
       , roomname: '甜甜的主播5'
       , content: '60条消息/分钟'
       });
-    }, 2000);
+    }, 2000);*/
   });
 
   // 
@@ -188,7 +188,7 @@ $(function() {
     setTimeout(function() {
       $.pub('socket/Gateway/Event/Login', {
         uid: 1
-      , nickname: '测试账号'
+      , nickname: '管理员'
       , roomId: data.roomid
       });
     }, 600);
@@ -214,7 +214,7 @@ $(function() {
   setTimeout(function() {
     $.pub('socket/Gateway/Room/ChatList', {
       list: [{
-        txt: '测试[害羞]'
+        txt: '测试'
       , uid: 1
       , nickname: '张三'
       , portrait: 'http://dummyimage.com/50x50'
@@ -244,9 +244,10 @@ $(function() {
 
   // 
   $.sub('tosocket/Gateway/Fans/Zan', function(e, data) {
+    var one = vmChatBox.data.oMap[data.uid];///
     $.pub('socket/Gateway/Fans/Zan', {
       uid: data.uid
-    , nickname: '测试账号'
+    , nickname: one.nickname
     , level: 3
     , roomId: data.roomid
     });
@@ -254,19 +255,20 @@ $(function() {
 
   // 
   $.sub('tosocket/Rich/Gift/Send', function(e, data) {
+    var one = vmChatBox.data.oMap[data.uid];///
     $.pub('socket/Gateway/Gift/Incoming', {
       id: 1 || data.giftid
-    , uid: 1
+    , uid: data.uid
     , level: 1
-    , portrait: 1
-    , nickname: '测试账号'
+    , portrait: '1'
+    , nickname: one.nickname
     , toUid: 1
     , utime: 1
     , roomId: data.roomid
     , combo: data.combo
     , comboId: data.combo
 
-    , roomid: 1
+    , roomid: data.roomid
     });
   });
 });
