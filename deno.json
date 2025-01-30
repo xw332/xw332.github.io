@@ -1,0 +1,16 @@
+{
+  "imports": {
+    "@std/assert": "jsr:@std/assert@1",
+    "path/": "https://deno.land/std/path/",
+    "media_types/": "https://deno.land/st/media_types/",
+    "http/": "https://deno.land/std/http/",
+    "streams/": "https://deno.land/std/streams/",
+    "flags/": "https://deno.land/std/flags/",
+    "fmt/": "https://deno.land/std/fmt/",
+    "version/": "https://deno.land/std/version/"
+  },
+  "tasks": {
+    "start": "deno run --allow-net --allow-read file_server.ts",
+    "dev": "deno run --watch file_server.ts"
+  }
+}
