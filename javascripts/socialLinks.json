@@ -1,0 +1,50 @@
+[
+  {
+    "name": "B站",
+    "fullName": "B站-晴天moons",
+    "url": "https://space.bilibili.com/3493126077417495",
+    "icon": "fa-bilibili"
+  },
+  {
+    "name": "微信视频号",
+    "fullName": "微信视频号-晴天moons",
+    "url": "#",
+    "icon": "fa-weixin"
+  },
+  {
+    "name": "抖音",
+    "fullName": "抖音主页",
+    "url": "https://v.douyin.com/iYaYjbFf",
+    "icon": "fa-tiktok"
+  },
+  {
+    "name": "快手",
+    "fullName": "快手主页",
+    "url": "https://www.kuaishou.com/profile/3x4fr6vyprx98y9",
+    "icon": "fa-kickstarter"
+  },
+  {
+    "name": "音乐",
+    "fullName": "音乐主页",
+    "url": "https://suno.com/@moons",
+    "icon": "fa-music"
+    },
+  {
+    "name": "吐司",
+    "fullName": "吐司主页",
+    "url": "https://tusi.cn/u/636685810246332337",
+    "icon": "fa-bread-slice"
+  },
+  {
+    "name": "海艺",
+    "fullName": "海艺主页",
+    "url": "https://www.seaart.me/zhCN/user/5c7b6321b631f6b381448d49e48dc863",
+    "icon": "fa-palette"
+  },
+  {
+    "name": "知乎",
+    "fullName": "知乎主页",
+    "url": "https://www.zhihu.com/people/xiao-yue-19-73",
+    "icon": "fa-zhihu"
+  }
+]
