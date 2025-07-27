@@ -1,53 +1,34 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
   <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <title>xw332的个人主页</title>
-    <link rel="stylesheet" href="stylesheets/styles.css">
-    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
-    <script src="javascripts/respond.js"></script>
-    <!--[if lt IE 9]>
-    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-    <!--[if lt IE 8]>
-    <link rel="stylesheet" href="stylesheets/ie.css">
-    <![endif]-->
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>晴天moons的个人主页</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css"
+      crossorigin="anonymous"
+    />
+    <script type="module" crossorigin src="/javascripts/index-CiQebvO7.js"></script>
+    <link rel="stylesheet" crossorigin href="/javascripts/style-BRQUiSLV.css">
   </head>
   <body>
-    <div id="header">
-      <nav>
-        <li class="fork"><a href="https://github.com/xw332">View On GitHub</a></li>
-      </nav>
-    </div><!-- end header -->
-
-    <div class="wrapper">
-
-      <section>
-        <div id="title">
-          <h1>我的个人主页</h1>
-          <p>这就是个导航</p>
-          <hr>
-        </div>
-
-        <p>更新记录20140603.1：</p>
-
-        <p>新建了个人主页项目：xw332.github.io</p>
-
-        <p>更新记录20140508.1：</p>
-
-        <p>上传了games和demo文件夹</p>
-
-        <div>
-          <p>链接目录</p>
-          <ul>
-            <li><a target="_blank" href="games">我的游戏</a></li>
-            <li><a target="_blank" href="demo">我的demo</a></li>
-          </ul>
-        </div>
-      </section>
-
-    </div>
+    <div id="root"></div>
+    <script type="text/javascript">
+      // 配置数据
+      const configData = {
+        music: [
+          'https://cdn1.suno.ai/a3b3d714-b9d8-4a16-b99b-5b067a28d74e.mp3',
+          'https://cdn1.suno.ai/07bf7feb-dbd1-4e17-ac96-1fec65461e5b.mp3'
+        ]
+      };
+      document.addEventListener('click', () => {
+        if (!configData.BG && configData.music[0]) {
+          configData.BG = new Audio(configData.music[0]);
+          configData.BG.loop = true;
+          configData.BG.play();
+        }
+      });
+    </script>
   </body>
 </html>
